@@ -70,6 +70,10 @@ void clear_boost_kick(int cpu)
 	clear_bit(BOOST_KICK, &rq->walt_flags);
 }
 
+#ifdef CONFIG_DYNAMIC_STUNE_BOOST
+static int boost_slot;
+#endif // CONFIG_DYNAMIC_STUNE_BOOST
+
 /*
  * Scheduler boost type and boost policy might at first seem unrelated,
  * however, there exists a connection between them that will allow us
@@ -203,6 +207,20 @@ static void _sched_set_boost(int type)
 		type = CONSERVATIVE_BOOST;
 	else if (boost_refcount[RESTRAINED_BOOST] >= 1)
 		type = RESTRAINED_BOOST;
+static void _sched_set_boost(int type)
+{
+
+#ifdef CONFIG_DYNAMIC_STUNE_BOOST
+	if (type > 0)
+		do_stune_sched_boost("top-app", &boost_slot);
+	else
+		reset_stune_boost("top-app", boost_slot);
+#endif // CONFIG_DYNAMIC_STUNE_BOOST
+
+	if (type == 0)
+		sched_boost_disable_all();
+	else if (type > 0)
+		sched_boost_enable(type);
 	else
 		type = NO_BOOST;
 
