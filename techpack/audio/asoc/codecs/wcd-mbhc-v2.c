@@ -1889,6 +1889,12 @@ int wcd_mbhc_start(struct wcd_mbhc *mbhc, struct wcd_mbhc_config *mbhc_cfg)
 							   PSY_EVENT_PROP_CHANGED,
 							   mbhc->usb_psy);
 		}
+		mbhc->fsa_nb.notifier_call = wcd_mbhc_usbc_ana_event_handler;
+		mbhc->fsa_nb.priority = 0;
+		rc = fsa4480_reg_notifier(&mbhc->fsa_nb, mbhc->fsa_np);
+		if (!rc && mbhc->usbc_hp_detect)
+			queue_delayed_work(system_power_efficient_wq,
+			&mbhc->mbhc_usbc_dwork, msecs_to_jiffies(50));
 	}
 
 	return rc;
