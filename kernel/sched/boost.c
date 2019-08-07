@@ -30,6 +30,10 @@ enum sched_boost_policy boost_policy;
 static enum sched_boost_policy boost_policy_dt = SCHED_BOOST_NONE;
 static DEFINE_MUTEX(boost_mutex);
 
+#ifdef CONFIG_DYNAMIC_STUNE_BOOST
+static int boost_slot;
+#endif // CONFIG_DYNAMIC_STUNE_BOOST
+
 /*
  * Scheduler boost type and boost policy might at first seem unrelated,
  * however, there exists a connection between them that will allow us
@@ -63,7 +67,7 @@ static void set_boost_policy(int type)
 
 static bool verify_boost_params(int type)
 {
-	return type >= RESTRAINED_BOOST_DISABLE && type <= MI_BOOST;
+	return type >= RESTRAINED_BOOST_DISABLE && type <= RESTRAINED_BOOST;
 }
 
 static void sched_no_boost_nop(void)
@@ -212,13 +216,6 @@ static void sched_boost_disable_all(void)
 	}
 }
 
-	/* Aggregate final boost type */
-	if (boost_refcount[FULL_THROTTLE_BOOST] >= 1)
-		type = FULL_THROTTLE_BOOST;
-	else if (boost_refcount[CONSERVATIVE_BOOST] >= 1)
-		type = CONSERVATIVE_BOOST;
-	else if (boost_refcount[RESTRAINED_BOOST] >= 1)
-		type = RESTRAINED_BOOST;
 static void _sched_set_boost(int type)
 {
 
@@ -229,8 +226,6 @@ static void _sched_set_boost(int type)
 		reset_stune_boost("top-app", boost_slot);
 #endif // CONFIG_DYNAMIC_STUNE_BOOST
 
-static void _sched_set_boost(int type)
-{
 	if (type == 0)
 		sched_boost_disable_all();
 	else if (type > 0)
