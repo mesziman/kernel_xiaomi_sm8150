@@ -52,7 +52,7 @@ MODULE_DEVICE_TABLE(of, msm_match_table);
 #define CLASS_NAME	"nqx"
 #define MAX_BUFFER_SIZE			(320)
 #define WAKEUP_SRC_TIMEOUT		(2000)
-#define MAX_RETRY_COUNT			3
+#define MAX_RETRY_COUNT			6
 #define NCI_RESET_CMD_LEN		4
 #define NCI_RESET_RSP_LEN		4
 #define NCI_RESET_NTF_LEN		13
@@ -793,12 +793,6 @@ static const struct file_operations nfc_dev_fops = {
 #endif
 };
 
-/**
- * Do not need check availability of NFCC.
- * This function will block NFCC to enter FW download mode.
- */
-
-#if 0
 /* Check for availability of NQ_ NFC controller hardware */
 static int nfcc_hw_check(struct i2c_client *client, struct nqx_dev *nqx_dev)
 {
@@ -932,6 +926,7 @@ reset_enable_gpio:
 			goto reset_enable_gpio;
 		goto err_nfcc_hw_check;
 	}
+
 	nqx_enable_irq(nqx_dev);
 	ret = wait_event_interruptible(nqx_dev->read_wq, !nqx_dev->irq_enabled);
 	if (ret < 0) {
@@ -1013,7 +1008,6 @@ done:
 
 	return ret;
 }
-#endif
 
 /*
  * Routine to enable clock.
@@ -1340,8 +1334,6 @@ static int nqx_probe(struct i2c_client *client,
 	}
 	nqx_disable_irq(nqx_dev);
 
-	/* Do not perform nfcc_hw_check, make sure that nfcc is present */
-#if 0
 	/*
 	 * To be efficient we need to test whether nfcc hardware is physically
 	 * present before attempting further hardware initialisation.
@@ -1354,7 +1346,6 @@ static int nqx_probe(struct i2c_client *client,
 		/* We don't think there is hardware switch NFC OFF */
 		goto err_request_hw_check_failed;
 	}
-#endif
 
 	/* Register reboot notifier here */
 	r = register_reboot_notifier(&nfcc_notifier);
@@ -1370,13 +1361,11 @@ static int nqx_probe(struct i2c_client *client,
 	}
 
 #ifdef NFC_KERNEL_BU
-	if (nqx_dev->pdata->clk_pin_voting) {
-		r = nqx_clock_select(nqx_dev);
-		if (r < 0) {
-			dev_err(&client->dev,
-				"%s: nqx_clock_select failed\n", __func__);
-			goto err_clock_en_failed;
-		}
+	r = nqx_clock_select(nqx_dev);
+	if (r < 0) {
+		dev_err(&client->dev,
+			"%s: nqx_clock_select failed\n", __func__);
+		goto err_clock_en_failed;
 	}
 	gpio_set_value(platform_data->en_gpio, 1);
 #endif
