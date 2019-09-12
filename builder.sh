@@ -35,8 +35,9 @@ export CCACHE_DIR=$CCACHEDIR/.ccache
 ls $TOOLCHAIN32
 
 make clean && make mrproper
-make -C $KERNEL_DIR cepheus_defconfig
-make -C $KERNEL_DIR  -j$( nproc --all )
+make O=out -C $KERNEL_DIR cepheus_defconfig
+make -O=out C $KERNEL_DIR  -j$( nproc --all ) ARCH=arm64 CC=clang CXX=clang++ CLANG_TRIPLE=aarch64-linux-gnu- \
+CROSS_COMPILE=aarch64-linux-android- CROSS_COMPILE_ARM32=arm-linux-androideabi-
 
 {
 cp $KERNEL_DIR/arch/arm64/boot/Image.gz-dtb $ANYKERNEL_DIR/cepheus
