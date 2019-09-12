@@ -754,7 +754,7 @@ static int msm_lsm_check_and_set_lab_controls(struct snd_pcm_substream *substrea
 			__func__, rc);
 		return rc;
 	} else {
-		if (LSM_IS_LAST_STAGE(prtd->lsm_client, stage_idx)) {
+		if LSM_IS_LAST_STAGE(prtd->lsm_client, stage_idx) {
 			rc = msm_lsm_lab_buffer_alloc(prtd,
 					enable ? LAB_BUFFER_ALLOC : LAB_BUFFER_DEALLOC);
 			if (rc) {
