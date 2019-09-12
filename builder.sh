@@ -15,7 +15,7 @@ FINAL_ZIP="$KERNEL_NAME""$DEVICE""$DATE""$TYPE""$VER".zip
 rm $ANYKERNEL_DIR/cepheus/Image.gz-dtb
 rm $KERNEL_DIR/arch/arm64/boot/Image.gz $KERNEL_DIR/arch/arm64/boot/Image.gz-dtb
 
-PATH="${PATH}:${TOOLCHAINDIR}:${TOOLCHAIN32}:/pipeline/build/root/toolchain/gclang/clang-r349610/bin"
+export PATH="/pipeline/build/root/toolchain/gclang/clang-r349610/bin:${TOOLCHAINDIR}:${TOOLCHAIN32}:${PATH}"
 export ARCH=arm64
 export KBUILD_BUILD_USER="mesziman"
 export KBUILD_BUILD_HOST="github"
