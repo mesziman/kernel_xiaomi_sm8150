@@ -1,0 +1,9 @@
+# https://devcenter.wercker.com/overview-and-core-concepts/containers/ 
+box: ubuntu
+build:
+ steps:
+  - script:
+    name: compile
+    code: |
+     bash wercker.sh
+
