@@ -36,7 +36,7 @@ ls $TOOLCHAIN32
 make clean && make mrproper
 make O=out -C $KERNEL_DIR cepheus_defconfig
 make O=out -C $KERNEL_DIR  -j$( nproc --all ) ARCH=arm64 CC=clang CXX=clang++ CLANG_TRIPLE=aarch64-linux-gnu- \
-CROSS_COMPILE=aarch64-linux-android- CROSS_COMPILE_ARM32=arm-linux-androideabi-
+CROSS_COMPILE=aarch64-linux-android- CROSS_COMPILE_ARM32=arm-linux-androideabi- | tee ${WERCKER_REPORT_ARTIFACTS_DIR}/buildlog.txt
 
 {
 cp $KERNEL_DIR/arch/arm64/boot/Image.gz-dtb $ANYKERNEL_DIR/cepheus
