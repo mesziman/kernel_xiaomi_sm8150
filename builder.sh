@@ -48,4 +48,5 @@ fi
 
 cd $ANYKERNEL_DIR/cepheus
 zip -r9 $FINAL_ZIP * -x *.zip $FINAL_ZIP
+cp ${WERCKER_REPORT_ARTIFACTS_DIR}/buildlog.txt /pipeline/output/
 mv $FINAL_ZIP /pipeline/output/$FINAL_ZIP
