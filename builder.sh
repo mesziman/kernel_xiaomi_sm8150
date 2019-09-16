@@ -37,7 +37,11 @@ make clean && make mrproper
 make O=out -C $KERNEL_DIR cepheus_defconfig
 make O=out -C $KERNEL_DIR  -j$( nproc --all ) ARCH=arm64 CC=clang CXX=clang++ CLANG_TRIPLE=aarch64-linux-gnu- \
 CROSS_COMPILE=aarch64-linux-android- CROSS_COMPILE_ARM32=arm-linux-androideabi- | tee ${WERCKER_REPORT_ARTIFACTS_DIR}/buildlog.txt
-
+make O=out -C $KERNEL_DIR  -j$( nproc --all ) ARCH=arm64 CC=clang CXX=clang++ CLANG_TRIPLE=aarch64-linux-gnu- \
+CROSS_COMPILE=aarch64-linux-android- CROSS_COMPILE_ARM32=arm-linux-androideabi-  Image.gz-dtb  | tee ${WERCKER_REPORT_ARTIFACTS_DIR}/buildloggz.txt
+make O=out -C $KERNEL_DIR  -j$( nproc --all ) ARCH=arm64 CC=clang CXX=clang++ CLANG_TRIPLE=aarch64-linux-gnu- \
+CROSS_COMPILE=aarch64-linux-android- CROSS_COMPILE_ARM32=arm-linux-androideabi-  dtbs  | tee ${WERCKER_REPORT_ARTIFACTS_DIR}/buildlogtb.txt
+find -name "*.gz-dtb"
 {
 cp $KERNEL_DIR/arch/arm64/boot/Image.gz-dtb $ANYKERNEL_DIR/cepheus
 } || {
@@ -48,5 +52,5 @@ fi
 
 cd $ANYKERNEL_DIR/cepheus
 zip -r9 $FINAL_ZIP * -x *.zip $FINAL_ZIP
-cp ${WERCKER_REPORT_ARTIFACTS_DIR}/buildlog.txt /pipeline/output/
+cp ${WERCKER_REPORT_ARTIFACTS_DIR}/buildlog* /pipeline/output/
 mv $FINAL_ZIP /pipeline/output/$FINAL_ZIP
